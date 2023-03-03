@@ -1,5 +1,5 @@
 {
-  "name": "autocommit",
+  "name": "magicom",
   "version": "0.1.0",
   "main": "dist/index.js",
   "author": "M Gilang Januar",
@@ -12,7 +12,7 @@
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "bin": {
-    "autocommit": "./dist/index.js"
+    "magicom": "./dist/index.js"
   },
   "preferGlobal": true,
   "devDependencies": {

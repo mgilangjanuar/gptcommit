@@ -1,1 +1,1 @@
-# autocommit
+# magicom
