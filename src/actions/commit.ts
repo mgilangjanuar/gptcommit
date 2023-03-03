@@ -10,9 +10,8 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     return
   }
 
-  const diffString = execSync(`git add ${files.join(' ')} && git diff --staged`).toString()
-
-  const request = async () => {
+  const request = async (compact: boolean = false) => {
+    const diffString = execSync(compact ? `git status ${files.join(' ')}` : `git add ${files.join(' ')} && git diff --staged`).toString()
     try {
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
@@ -40,8 +39,14 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
       spinner.succeed('Successfully generated a commit message.')
       console.log(`---\n${commitMessage}\n---`)
     } catch (error) {
-      spinner.fail(error.message)
-      return
+      try {
+        commitMessage = await request(true)
+        spinner.succeed('Successfully generated a commit message.')
+        console.log(`---\n${commitMessage}\n---`)
+      } catch (error) {
+        spinner.fail(error.message)
+        return
+      }
     }
 
     const { confirm } = await inquirer.prompt([

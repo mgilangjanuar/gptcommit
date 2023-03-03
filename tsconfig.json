@@ -3,13 +3,13 @@
     "target": "es6",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "declaration": true
+    "declaration": false
   },
   "include": [
     "src/**/*.ts"
