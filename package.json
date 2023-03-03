@@ -1,6 +1,6 @@
 {
   "name": "gptcommit",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "main": "dist/index.js",
   "author": "M Gilang Januar",
   "license": "MIT",
@@ -9,8 +9,7 @@
   "scripts": {
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "version": "yarn version --new-version $VERSION"
+    "lint:fix": "eslint src/**/*.ts --fix"
   },
   "bin": {
     "gptcommit": "./dist/index.js"
