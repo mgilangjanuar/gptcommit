@@ -4,14 +4,13 @@ import inquirer from 'inquirer'
 import { r } from '../utils/OpenAI.js'
 import { config } from '../utils/Storage.js'
 
-export async function commit({ file = '.' }: { file: string }) {
+export async function commit({ files = ['.'] }: { files: string[] }) {
   if (!config.get('token')) {
     ora('You need to set your OpenAI token first. Run `committer set-token <your token>`.').fail()
     return
   }
 
-  execSync(`git add ${file}`).toString()
-  const diffString = execSync(`git add ${file} && git diff --staged`).toString()
+  const diffString = execSync(`git add ${files.join(' ')} && git diff --staged`).toString()
 
   const request = async () => {
     try {
