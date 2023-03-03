@@ -10,7 +10,7 @@
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "version": "npm run build"
+    "version": "yarn version --new-version $VERSION"
   },
   "bin": {
     "gptcommit": "./dist/index.js"
