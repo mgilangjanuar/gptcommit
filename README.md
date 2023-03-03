@@ -1,1 +1,1 @@
-# magicom
+# gptcommit

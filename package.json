@@ -1,5 +1,5 @@
 {
-  "name": "magicom",
+  "name": "gptcommit",
   "version": "0.1.0",
   "main": "dist/index.js",
   "author": "M Gilang Januar",
@@ -12,7 +12,7 @@
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "bin": {
-    "magicom": "./dist/index.js"
+    "gptcommit": "./dist/index.js"
   },
   "preferGlobal": true,
   "devDependencies": {
