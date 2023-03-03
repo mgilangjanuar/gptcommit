@@ -9,7 +9,7 @@ const program = new Command()
 program
   .name('gptcommit')
   .description('A CLI tool to help you commit your changes')
-  .version('0.1.2')
+  .version('0.1.7')
 
 program
   .command('set-token <token>')

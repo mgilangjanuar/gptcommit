@@ -19,7 +19,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
         messages: [
           {
             role: 'user',
-            content: `Create a descriptive commit message with explanations of changes in the bullet form:\n\n${diffString}\n\nCommit:`
+            content: `Create a descriptive commit message with explanations of changes in the bullet form and ignore the file mode:\n\n${diffString}\n\nCommit:`
           }
         ]
       })
