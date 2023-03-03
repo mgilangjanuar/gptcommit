@@ -1,6 +1,6 @@
 {
   "name": "gptcommit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/index.js",
   "author": "M Gilang Januar",
   "license": "MIT",
