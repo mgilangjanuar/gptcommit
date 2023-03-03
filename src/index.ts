@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander'
 import { commit } from './actions/commit.js'
 import { setToken } from './actions/setToken.js'
@@ -5,9 +7,9 @@ import { setToken } from './actions/setToken.js'
 const program = new Command()
 
 program
-  .name('committer')
+  .name('gptcommit')
   .description('A CLI tool to help you commit your changes')
-  .version('0.1.0')
+  .version('0.1.1')
 
 program
   .command('set-token <token>')
