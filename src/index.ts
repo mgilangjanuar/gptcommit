@@ -2,6 +2,7 @@
 
 import { Command } from 'commander'
 import { commit } from './actions/commit.js'
+import { setMode } from './actions/setMode.js'
 import { setToken } from './actions/setToken.js'
 
 const program = new Command()
@@ -15,6 +16,11 @@ program
   .command('set-token <token>')
   .description('Set your OpenAI token (https://platform.openai.com/account/api-keys)')
   .action(setToken)
+
+program
+  .command('set-mode')
+  .description('Select your commit style')
+  .action(setMode)
 
 program
   .option('-f, --files <files...>', 'Select a file or directory to commit', ['.'])

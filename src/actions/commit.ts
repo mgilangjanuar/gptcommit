@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
-import ora from 'ora'
 import inquirer from 'inquirer'
+import ora from 'ora'
 import { r } from '../utils/OpenAI.js'
 import { config } from '../utils/Storage.js'
 
@@ -19,7 +19,15 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
         messages: [
           {
             role: 'user',
-            content: `Create a descriptive commit message with explanations of changes in the bullet form and ignore the file mode:\n\n${diffString}\n\nCommit:`
+            content: `Create a${
+              config.get('style') === 'long' ? ' descriptive with a title and description' : ' title only'
+            } commit message${
+              config.get('prefix') ? ' using prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
+                : ' without prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
+            } with explanations of new changes only${
+              config.get('style') === 'long' && config.get('description') === 'bullet' ? ` in the ${
+                config.get('description') ? 'bullet' : 'descriptive'} form` : ''
+            } and ignore the file mode:\n\n${diffString}\n\nCommit:`
           }
         ]
       })
@@ -36,18 +44,17 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     const spinner = ora('Generating a commit message...').start()
     try {
       commitMessage = await request()
-      spinner.succeed('Successfully generated a commit message.')
-      console.log(`---\n${commitMessage}\n---`)
     } catch (error) {
       try {
         commitMessage = await request(true)
-        spinner.succeed('Successfully generated a commit message.')
-        console.log(`---\n${commitMessage}\n---`)
       } catch (error) {
+        execSync('git reset')
         spinner.fail(error.message)
         return
       }
     }
+    spinner.succeed('Successfully generated a commit message.')
+    console.log(`---\n${commitMessage}\n---`)
 
     const { confirm } = await inquirer.prompt([
       {
@@ -58,6 +65,8 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     ])
     if (confirm) {
       isDone = true
+    } else {
+      console.log()
     }
   }
 
@@ -75,6 +84,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
       execSync('git push -u origin HEAD')
       spinner.succeed('Pushed.')
     } catch (error) {
+      execSync('git reset')
       spinner.fail(error.message)
       return
     }
