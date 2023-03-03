@@ -16,7 +16,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     try {
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
-        temperature: 0.7,
+        temperature: 0.2,
         messages: [
           {
             role: 'user',

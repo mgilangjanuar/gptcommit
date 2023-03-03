@@ -17,7 +17,7 @@ program
   .action(setToken)
 
 program
-  .option('-f, --files <files...>', 'Select a file or directory to commit', '.')
+  .option('-f, --files <files...>', 'Select a file or directory to commit', ['.'])
   .description('Commit your changes')
   .action(commit)
 
