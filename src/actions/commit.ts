@@ -15,19 +15,17 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     try {
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
-        temperature: 0.2,
+        temperature: 0.01,
         messages: [
           {
             role: 'user',
             content: `Create a${
-              config.get('style') === 'long' ? ' descriptive with a title and description' : ' title only'
+              config.get('style') === 'long' ? ` title and change details in the ${
+                config.get('description') ? 'bullet' : 'descriptive'} form` : ' title for the'
             } commit message${
               config.get('prefix') ? ' using prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
                 : ' without prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
-            } with explanations of new changes only${
-              config.get('style') === 'long' && config.get('description') === 'bullet' ? ` in the ${
-                config.get('description') ? 'bullet' : 'descriptive'} form` : ''
-            } and ignore the file mode:\n\n${diffString}\n\nCommit:`
+            } with explanations of new changes only and ignore the file mode:\n\n${diffString}\n\nCommit:`
           }
         ]
       })
