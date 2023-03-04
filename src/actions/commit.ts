@@ -70,6 +70,26 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     }
   }
 
+  const { edit } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'edit',
+      message: 'Do you want to edit this commit message?'
+    }
+  ])
+
+  if (edit) {
+    const { message } = await inquirer.prompt([
+      {
+        type: 'editor',
+        name: 'message',
+        message: 'Edit your commit message',
+        default: commitMessage
+      }
+    ])
+    commitMessage = message
+  }
+
   execSync(`printf "${commitMessage}" | git commit -F-`)
   const { push } = await inquirer.prompt([
     {
