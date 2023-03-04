@@ -2,6 +2,8 @@
 
 gptcommit is a tool to help you commit your changes to a git repository with ChatGPT API.
 
+![demo](https://res.cloudinary.com/mgilangjanuar/image/upload/v1677890519/ezgif.com-video-to-gif_qmvjan.gif)
+
 ## Installation
 
 ```bash
