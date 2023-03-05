@@ -10,7 +10,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     return
   }
 
-  const request = async (compact: boolean = false) => {
+  const request = async (compact: boolean = false, temperature: number = 0.09) => {
     const diffString = execSync(compact ? `git status ${files.join(' ')}` : `git add ${files.join(' ')} && git diff --staged`).toString()
     if (!diffString.trim()) {
       throw new Error('No changes to commit.')
@@ -18,7 +18,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     try {
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
-        temperature: 0.09,
+        temperature,
         messages: [
           {
             role: 'user',
@@ -40,17 +40,18 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
 
   let commitMessage: string
   let isDone: boolean = false
+  let temperature: number = 0.09
 
   const spinner = ora()
   while (!isDone) {
     console.clear()
     spinner.start('Generating a commit message...')
     try {
-      commitMessage = await request()
+      commitMessage = await request(false, temperature)
     } catch (error) {
       try {
         if (!error.status) throw error
-        commitMessage = await request(true)
+        commitMessage = await request(true, temperature)
       } catch (error) {
         execSync('git reset')
         spinner.fail(error.message)
@@ -71,6 +72,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
       isDone = true
     } else {
       execSync('git reset')
+      temperature += 0.05
       console.log()
     }
   }
