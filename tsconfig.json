@@ -12,7 +12,8 @@
     "declaration": false
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.mts",
+    "src/**/*.cts"
   ],
   "exclude": [
     "src/**/*.spec.ts",
