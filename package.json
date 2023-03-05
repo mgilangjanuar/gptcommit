@@ -1,7 +1,7 @@
 {
   "name": "gptcommit",
   "version": "0.1.20",
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "author": "M Gilang Januar",
   "license": "MIT",
   "type": "module",
@@ -13,10 +13,10 @@
     "package": "yarn build && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && sed -i '' '2s/$/\\\nimport { fileURLToPath } from \"url\";\\\nconst __filename = fileURLToPath(import.meta.url);\\\n/' build/index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
   },
   "bin": {
-    "gptcommit": "./dist/index.js"
+    "gptcommit": "./dist/index.mjs"
   },
   "pkg": {
-    "scripts": "./dist/build/index.js",
+    "scripts": "./dist/build/index.mjs",
     "assets": [
       "./dist/build"
     ],
