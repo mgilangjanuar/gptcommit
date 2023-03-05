@@ -1,0 +1,15 @@
+{
+  "name": "gptcommit",
+  "bin": {
+    "gptcommit": "./index.js"
+  },
+  "pkg": {
+    "scripts": "./index.js",
+    "assets": [
+      "./fonts/*"
+    ],
+    "target": [
+      "node18-macos-arm64"
+    ]
+  }
+}

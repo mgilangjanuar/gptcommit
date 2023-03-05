@@ -8,13 +8,20 @@
   "scripts": {
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "package": "yarn build && ncc build -o ./dist/build ./dist/index.js && cp ./package.pkg.json ./dist/build/package.json && cd ./dist/build && pkg package.json"
   },
   "bin": {
     "gptcommit": "./dist/index.js"
   },
   "pkg": {
-    "scripts": "./dist/**/*.js"
+    "scripts": "./dist/build/index.js",
+    "assets": [
+      "./dist/build"
+    ],
+    "target": [
+      "node18-macos-arm64"
+    ]
   },
   "preferGlobal": true,
   "devDependencies": {
