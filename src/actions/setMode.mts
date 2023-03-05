@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-import { config } from '../utils/Storage.js'
+import { config } from '../utils/Storage.mjs'
 
 export async function setMode() {
   const { style, description, prefix } = await inquirer.prompt([

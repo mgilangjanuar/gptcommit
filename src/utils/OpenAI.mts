@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { config } from './Storage.js'
+import { config } from './Storage.mjs'
 
 export const r = axios.create({
   baseURL: 'https://api.openai.com/v1',
