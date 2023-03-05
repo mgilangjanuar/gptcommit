@@ -43,6 +43,6 @@ eg. add comments to the code and add comments to the code.`,
   ])
 
   config.set('style', style.split('\n')[0].toLowerCase())
-  config.set('description', description.split('\n')[0].toLowerCase())
+  config.set('description', description?.split('\n')[0].toLowerCase())
   config.set('prefix', prefix !== 'None')
 }

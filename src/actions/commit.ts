@@ -25,7 +25,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
             role: 'user',
             content: `Create one${
               config.get('style') === 'long' ? ` title and change details in the ${
-                config.get('description') ? 'bullet' : 'descriptive'} form` : ' title'
+                config.get('description') === 'bullet' ? 'bullet form' : 'descriptive and without bullet format'}` : ' title'
             } for the commit message${
               config.get('prefix') ? ' using prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
                 : ' without prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
@@ -33,7 +33,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
           }
         ]
       })
-      return data.choices[0].message.content.trim()
+      return data.choices[0].message.content.replace(/^"|"$/g, '').trim()
     } catch (error) {
       throw error.response.data.error || error.response.data || error
     }
