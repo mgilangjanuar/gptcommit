@@ -2,8 +2,8 @@ import { execSync } from 'child_process'
 import figlet from 'figlet'
 import inquirer from 'inquirer'
 import ora from 'ora'
-import { r } from '../utils/OpenAI'
-import { config } from '../utils/Storage'
+import { r } from '../utils/OpenAI.js'
+import { config } from '../utils/Storage.js'
 
 export async function commit({ files = ['.'] }: { files: string[] }) {
   if (!config.get('token')) {

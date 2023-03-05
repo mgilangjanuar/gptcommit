@@ -1,5 +1,6 @@
 {
   "name": "gptcommit",
+  "type": "module",
   "bin": {
     "gptcommit": "./index.js"
   },
@@ -7,9 +8,6 @@
     "scripts": "./index.js",
     "assets": [
       "./fonts/*"
-    ],
-    "target": [
-      "node18-macos-arm64"
     ]
   }
 }

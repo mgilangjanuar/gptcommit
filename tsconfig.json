@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "es6",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "esModuleInterop": true,
     "sourceMap": false,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
