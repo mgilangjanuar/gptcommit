@@ -12,6 +12,10 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
 
   const request = async (compact: boolean = false) => {
     const diffString = execSync(compact ? `git status ${files.join(' ')}` : `git add ${files.join(' ')} && git diff --staged`).toString()
+    if (!diffString.trim()) {
+      ora('No changes to commit.').fail()
+      return
+    }
     try {
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
