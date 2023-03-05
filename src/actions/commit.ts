@@ -2,8 +2,8 @@ import { execSync } from 'child_process'
 import figlet from 'figlet'
 import inquirer from 'inquirer'
 import ora from 'ora'
-import { r } from '../utils/OpenAI.js'
-import { config } from '../utils/Storage.js'
+import { r } from '../utils/OpenAI'
+import { config } from '../utils/Storage'
 
 export async function commit({ files = ['.'] }: { files: string[] }) {
   if (!config.get('token')) {
@@ -14,7 +14,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
   const request = async (compact: boolean = false, temperature: number = 0.09) => {
     const diffString = execSync(compact ? `git status ${files.join(' ')}` : `git add ${files.join(' ')} && git diff --staged`).toString()
     if (!diffString.trim()) {
-      throw new Error('No changes to commit.')
+      throw { status: 5001, message: 'No changes to commit' }
     }
     try {
       const { data } = await r.post('/chat/completions', {
@@ -54,7 +54,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
       commitMessage = await request(false, temperature)
     } catch (error) {
       try {
-        if (!error.status) throw error
+        if (error.status === 5001) throw error
         commitMessage = await request(true, temperature)
       } catch (error) {
         execSync('git reset')
