@@ -6,7 +6,7 @@ import { config } from '../utils/Storage.js'
 
 export async function commit({ files = ['.'] }: { files: string[] }) {
   if (!config.get('token')) {
-    ora('You need to set your OpenAI token first. Run `committer set-token <your token>`.').fail()
+    ora('You need to set your OpenAI token first. Run `gptcommit set-token <your token>`.').fail()
     return
   }
 
@@ -15,17 +15,17 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     try {
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
-        temperature: 0.01,
+        temperature: 0.05,
         messages: [
           {
             role: 'user',
             content: `Create a${
               config.get('style') === 'long' ? ` title and change details in the ${
-                config.get('description') ? 'bullet' : 'descriptive'} form` : ' title for the'
-            } commit message${
+                config.get('description') ? 'bullet' : 'descriptive'} form` : ' title'
+            } for the commit message${
               config.get('prefix') ? ' using prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
                 : ' without prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
-            } with explanations of new changes only and ignore the file mode:\n\n${diffString}\n\nCommit:`
+            } with explanations of new changes only:\n\n${diffString}\n\nCommit:`
           }
         ]
       })
@@ -38,8 +38,10 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
   let commitMessage: string
   let isDone: boolean = false
 
+  const spinner = ora()
   while (!isDone) {
-    const spinner = ora('Generating a commit message...').start()
+    console.clear()
+    spinner.start('Generating a commit message...')
     try {
       commitMessage = await request()
     } catch (error) {
@@ -51,19 +53,20 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
         return
       }
     }
-    spinner.succeed('Successfully generated a commit message.')
-    console.log(`---\n${commitMessage}\n---`)
+    spinner.succeed(`Successfully generated a commit message.\n---\n${commitMessage}\n---`)
 
     const { confirm } = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'confirm',
-        message: 'Do you want to commit with this message?'
+        message: 'Generate a new commit message?',
+        default: false
       }
     ])
-    if (confirm) {
+    if (!confirm) {
       isDone = true
     } else {
+      execSync('git reset')
       console.log()
     }
   }
@@ -72,7 +75,8 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     {
       type: 'confirm',
       name: 'edit',
-      message: 'Do you want to edit this commit message?'
+      message: 'Do you want to edit this commit message?',
+      default: false
     }
   ])
 
@@ -88,7 +92,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     commitMessage = message
   }
 
-  execSync(`printf "${commitMessage}" | git commit -F-`)
+  execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
   const { push } = await inquirer.prompt([
     {
       type: 'confirm',
