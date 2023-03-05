@@ -1,4 +1,5 @@
 import { execSync } from 'child_process'
+import figlet from 'figlet'
 import inquirer from 'inquirer'
 import ora from 'ora'
 import { r } from '../utils/OpenAI.js'
@@ -22,7 +23,7 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
         messages: [
           {
             role: 'user',
-            content: `Create a${
+            content: `Create one${
               config.get('style') === 'long' ? ` title and change details in the ${
                 config.get('description') ? 'bullet' : 'descriptive'} form` : ' title'
             } for the commit message${
@@ -45,6 +46,9 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
   const spinner = ora()
   while (!isDone) {
     console.clear()
+    console.log(
+      `${figlet.textSync('gptcommit by\n@mgilangjanuar')}\n`
+    )
     spinner.start('Generating a commit message...')
     try {
       commitMessage = await request(false, temperature)

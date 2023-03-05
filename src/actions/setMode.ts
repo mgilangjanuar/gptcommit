@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 import { config } from '../utils/Storage.js'
 
 export async function setMode() {
-  const { style } = await inquirer.prompt([
+  const { style, description, prefix } = await inquirer.prompt([
     {
       type: 'list',
       name: 'style',
@@ -16,31 +16,21 @@ eg. add 'comments' option
         `Short
 eg. add 'comments' option`,
       ]
-    }
-  ])
-  const styleAnswer = style.split('\n')[0].toLowerCase()
-  config.set('style', styleAnswer)
-
-  if (styleAnswer === 'long') {
-    const { description } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'description',
-        message: 'Select your commit description mode',
-        choices: [
-          `Bullet
+    },
+    {
+      type: 'list',
+      name: 'description',
+      when: ({ style }: { style: string }) => style.split('\n')[0].toLowerCase() === 'long',
+      message: 'Select your commit description mode',
+      choices: [
+        `Bullet
 eg.
 - add comments to the code
 - add comments to the code`,
-          `Descriptive
+        `Descriptive
 eg. add comments to the code and add comments to the code.`,
-        ]
-      }
-    ])
-    config.set('description', description.split('\n')[0].toLowerCase())
-  }
-
-  const { prefix } = await inquirer.prompt([
+      ]
+    },
     {
       type: 'list',
       name: 'prefix',
@@ -51,5 +41,8 @@ eg. add comments to the code and add comments to the code.`,
       ]
     }
   ])
+
+  config.set('style', style.split('\n')[0].toLowerCase())
+  config.set('description', description.split('\n')[0].toLowerCase())
   config.set('prefix', prefix !== 'None')
 }
