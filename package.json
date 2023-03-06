@@ -8,8 +8,8 @@
   "private": false,
   "scripts": {
     "build": "rimraf dist && tsc --noEmit false",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
     "package": "yarn build && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && sed -i '' '2s/$/\\\nimport { fileURLToPath } from \"url\";\\\nconst __filename = fileURLToPath(import.meta.url);\\\n/' build/index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
   },
   "bin": {
