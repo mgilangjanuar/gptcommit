@@ -10,6 +10,13 @@ gptcommit is a tool to help you commit your changes to a git repository with Cha
 $ npm i -g gptcommit
 ```
 
+or, with [Homebrew](https://brew.sh/)
+
+```bash
+$ brew tap mgilangjanuar/gptcommit
+$ brew install gptcommit
+```
+
 ## Usage
 
 ```bash
