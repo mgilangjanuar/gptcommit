@@ -9,7 +9,7 @@
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "package": "yarn build && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && sed -i '' '2s/$/\\\nimport { fileURLToPath } from \"url\";\\\nconst __filename = fileURLToPath(import.meta.url);\\\n/' build/index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
+    "package": "yarn build && ncc build -o ./dist/build ./dist/index.js && cp ./package.pkg.json ./dist/build/package.json && cd ./dist/build && pkg package.json"
   },
   "bin": {
     "gptcommit": "./dist/index.mjs"
