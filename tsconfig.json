@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
@@ -12,8 +13,7 @@
     "declaration": false
   },
   "include": [
-    "src/**/*.mts",
-    "src/**/*.cts"
+    "src/**/*.ts",
   ],
   "exclude": [
     "src/**/*.spec.ts",

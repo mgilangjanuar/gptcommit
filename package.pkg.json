@@ -1,6 +1,5 @@
 {
   "name": "gptcommit",
-  "type": "module",
   "bin": {
     "gptcommit": "./index.js"
   },

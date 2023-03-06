@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import { commit } from './actions/commit.mjs'
-import { setMode } from './actions/setMode.mjs'
-import { setToken } from './actions/setToken.mjs'
+import { commit } from './actions/commit'
+import { setMode } from './actions/setMode'
+import { setToken } from './actions/setToken'
 
 const program = new Command()
 
