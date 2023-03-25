@@ -10,7 +10,7 @@
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "package": "yarn build && find dist/ -depth -name \"*.mjs\" -exec sh -c 'mv \"$1\" \"${1%.mjs}.js\"' _ {} \\; && find dist -type f -print0 | xargs -0 sed -i '' 's/\\.mjs//g' && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
+    "package": "yarn build && find dist/ -depth -name \"*.mjs\" -exec sh -c 'mv \"$1\" \"${1%.mjs}.js\"' _ {} \\; && find dist -type f -print0 | xargs -0 sed -i '' 's/\\.mjs//g' && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json && mv gptcommit-macos gptcommit && tar -czf gptcommit.tar.gz gptcommit && shasum -a 256 gptcommit.tar.gz"
   },
   "bin": {
     "gptcommit": "./dist/index.mjs"
