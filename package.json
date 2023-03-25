@@ -1,6 +1,6 @@
 {
   "name": "gptcommit",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "main": "dist/index.mjs",
   "author": "M Gilang Januar",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "package": "yarn build && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && sed -i '' '2s/$/\\\nimport { fileURLToPath } from \"url\";\\\nconst __filename = fileURLToPath(import.meta.url);\\\n/' build/index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
+    "package": "yarn build && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.mjs && sed -i '' '2s/$/\\\nimport { fileURLToPath } from \"url\";\\\nconst __filename = fileURLToPath(import.meta.url);\\\n/' build/index.mjs && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
   },
   "bin": {
     "gptcommit": "./dist/index.mjs"
@@ -35,7 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@vercel/ncc": "^0.36.1",
     "eslint": "^8.35.0",
-    "pkg": "^5.8.0",
+    "pkg": "^5.8.1",
     "rimraf": "^4.2.0",
     "typescript": "^4.9.5"
   },
