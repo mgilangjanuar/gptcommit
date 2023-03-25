@@ -5,43 +5,61 @@ import ora from 'ora'
 import { r } from '../utils/OpenAI.mjs'
 import { config } from '../utils/Storage.mjs'
 
-export async function commit({ files = ['.'] }: { files: string[] }) {
+export async function commit({ files = ['.'], context }: { files: string[], context?: string }) {
   if (!config.get('token')) {
     ora('You need to set your OpenAI token first. Run `gptcommit set-token <your token>`.').fail()
     return
   }
 
-  const request = async (compact: boolean = false, temperature: number = 0.09) => {
-    const diffString = execSync(compact ? `git status ${files.join(' ')}` : `git add ${files.join(' ')} && git diff --staged`).toString()
+  const request = async (temperature: number = 0.09, msg: any[] = []) => {
+    const diffString = execSync(`git add ${files.join(' ')} && git diff --staged`).toString()
     if (!diffString.trim()) {
       throw { status: 5001, message: 'No changes to commit' }
     }
     try {
+      const messages = msg.length ? msg : [
+        {
+          role: 'system',
+          content: `You are a helpful assistant that create exact one commit message with explanation details. Here is the format of good commit message:
+
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+
+With example:
+
+\`\`\`
+fix(middleware): ensure Range headers adhere more closely to RFC 2616
+
+Add one new dependency, use \`range-parser\` (Express dependency) to compute range. It is more well-tested in the wild.
+
+Fixes #2310
+\`\`\`${context ? `\n\nWith follow this instruction "${context}".` : ''}`
+        },
+        {
+          role: 'user',
+          content: diffString
+        }
+      ]
       const { data } = await r.post('/chat/completions', {
         model: 'gpt-3.5-turbo',
         temperature,
-        messages: [
-          {
-            role: 'user',
-            content: `Create one${
-              config.get('style') === 'long' ? ` title and change details in the ${
-                config.get('description') === 'bullet' ? 'bullet form' : 'descriptive and without bullet format'}` : ' title'
-            } for the commit message${
-              config.get('prefix') ? ' using prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
-                : ' without prefix "feat/enhancement/fix/refactor/style/docs/test/chore:"'
-            } with explanations of new changes only:\n\n${diffString}\n\nCommit:`
-          }
-        ]
+        messages
       })
-      return data.choices[0].message.content.replace(/^"|"$/g, '').trim()
+      messages.push(data.choices[0].message)
+      return messages
+      // return data.choices[0].message.content.replace(/^"|"$/g, '').trim()
     } catch (error) {
       throw error.response.data.error || error.response.data || error
     }
   }
 
+  let messages: any[] = []
   let commitMessage: string
   let isDone: boolean = false
-  let temperature: number = 0.09
+  const temperature: number = 0.09
 
   const spinner = ora()
   while (!isDone) {
@@ -51,16 +69,12 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     )
     spinner.start('Generating a commit message...')
     try {
-      commitMessage = await request(false, temperature)
+      messages = await request(temperature, messages)
+      commitMessage = messages.at(-1).content.replace(/^"|"$/g, '').trim()
     } catch (error) {
-      try {
-        if (error.status === 5001) throw error
-        commitMessage = await request(true, temperature)
-      } catch (error) {
-        execSync('git reset')
-        spinner.fail(error.message)
-        return
-      }
+      execSync('git reset')
+      spinner.fail(error.message)
+      return
     }
     spinner.succeed(`Successfully generated a commit message.\n---\n${commitMessage}\n---`)
 
@@ -75,8 +89,22 @@ export async function commit({ files = ['.'] }: { files: string[] }) {
     if (!confirm) {
       isDone = true
     } else {
+      const { prompt } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'prompt',
+          message: 'Any context or instruction you want to add?',
+          default: ''
+        }
+      ])
+      if (prompt) {
+        messages.push({
+          role: 'user',
+          content: prompt
+        })
+      }
       execSync('git reset')
-      temperature += 0.05
+      // temperature += 0.05
       console.log()
     }
   }

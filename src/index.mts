@@ -2,7 +2,6 @@
 
 import { Command } from 'commander'
 import { commit } from './actions/commit.mjs'
-import { setMode } from './actions/setMode.mjs'
 import { setToken } from './actions/setToken.mjs'
 
 const program = new Command()
@@ -17,13 +16,14 @@ program
   .description('Set your OpenAI token (https://platform.openai.com/account/api-keys)')
   .action(setToken)
 
-program
-  .command('set-mode')
-  .description('Select your commit style')
-  .action(setMode)
+// program
+//   .command('set-mode')
+//   .description('Select your commit style')
+//   .action(setMode)
 
 program
   .option('-f, --files <files...>', 'Select a file or directory to commit', ['.'])
+  .option('-c, --context <context>', 'Add context to your commit message')
   .description('Commit your changes')
   .action(commit)
 
