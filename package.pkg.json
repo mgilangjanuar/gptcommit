@@ -1,11 +1,10 @@
 {
   "name": "gptcommit",
-  "type": "module",
   "bin": {
-    "gptcommit": "./index.mjs"
+    "gptcommit": "./index.js"
   },
   "pkg": {
-    "scripts": "./index.mjs",
+    "scripts": "./index.js",
     "assets": [
       "./fonts/*"
     ]

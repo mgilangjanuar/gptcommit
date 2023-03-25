@@ -10,7 +10,7 @@
     "build": "rimraf dist && tsc --noEmit false",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "package": "yarn build && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.mjs && sed -i '' '2s/$/\\\nimport { fileURLToPath } from \"url\";\\\nconst __filename = fileURLToPath(import.meta.url);\\\n/' build/index.mjs && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
+    "package": "yarn build && find dist/ -depth -name \"*.mjs\" -exec sh -c 'mv \"$1\" \"${1%.mjs}.js\"' _ {} \\; && find dist -type f -print0 | xargs -0 sed -i '' 's/\\.mjs//g' && cp ./package.pkg.json ./dist/package.json && cd dist && ncc build -o ./build ./index.js && cp ../package.pkg.json ./build/package.json && cd ./build && pkg package.json"
   },
   "bin": {
     "gptcommit": "./dist/index.mjs"
