@@ -39,7 +39,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = msg.length ? msg : [
       {
         role: 'system',
-        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unprovided information especially in <footer> section. Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
+        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary information! Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
@@ -121,42 +121,40 @@ With follow this instruction "${context}"!` : ''}`
       }
     }
 
-    if (!commitMessage) {
-      isDone = true
-    }
+    if (commitMessage) {
+      spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
 
-    spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
-
-    const { confirm } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Generate a new commit message?',
-        default: false
-      }
-    ])
-    if (!confirm) {
-      isDone = true
-    } else {
-      const { prompt } = await inquirer.prompt([
+      const { confirm } = await inquirer.prompt([
         {
-          type: 'input',
-          name: 'prompt',
-          message: 'Any context or instruction you want to add?',
-          default: ''
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Generate a new commit message?',
+          default: false
         }
       ])
-      if (prompt) {
-        messages.push({
-          role: 'user',
-          content: prompt
-        })
+      if (!confirm) {
+        isDone = true
       } else {
-        messages.pop()
+        const { prompt } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'prompt',
+            message: 'Any context or instruction you want to add?',
+            default: ''
+          }
+        ])
+        if (prompt) {
+          messages.push({
+            role: 'user',
+            content: prompt
+          })
+        } else {
+          messages.pop()
+        }
+        execSync('git reset')
+        // temperature += 0.03
+        console.log()
       }
-      execSync('git reset')
-      // temperature += 0.03
-      console.log()
     }
   }
 
