@@ -96,6 +96,7 @@ With follow this instruction "${context}"!` : ''}`
     } catch (error) {
       if (isAxiosError(error)) {
         const err = error as AxiosError<{ error: { code: string } }>
+        console.log(err.response.data)
         if (err.response.status === 400 && err.response.data.error.code === 'context_length_exceeded')  {
           execSync('git reset')
           spinner.fail('Changes too big. Please select a smaller set of files with `gptcommit --files <files...>`.')
