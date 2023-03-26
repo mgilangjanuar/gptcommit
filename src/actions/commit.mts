@@ -110,7 +110,8 @@ With follow this instruction "${context}"!` : ''}`
             const chunks = await chunking(files)
             spinner.stop()
             for (const [i, chunk] of chunks.entries()) {
-              return await commit({ files: [chunk], context }, i === chunks.length - 1)
+              await commit({ files: [chunk], context }, i === chunks.length - 1)
+              if (i === chunk.length - 1) return
             }
             // return
           } else {
