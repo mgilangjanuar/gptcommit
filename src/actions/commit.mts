@@ -39,7 +39,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = msg.length ? msg : [
       {
         role: 'system',
-        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary information in the footer, footer section is optional! Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
+        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary information! Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
@@ -69,6 +69,7 @@ With follow this instruction "${context}"!` : ''}`
     const { data } = await r.post('/chat/completions', {
       model: 'gpt-3.5-turbo',
       temperature,
+      max_tokens: 100,
       messages
     })
     messages.push(data.choices[0].message)
@@ -117,7 +118,7 @@ With follow this instruction "${context}"!` : ''}`
             }
             isDone = true
           } else {
-            isDone = true
+            return
           }
         }
       } else {
