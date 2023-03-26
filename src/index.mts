@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { execSync } from 'child_process'
 import { Command } from 'commander'
 import { commit } from './actions/commit.mjs'
 import { setToken } from './actions/setToken.mjs'
@@ -26,5 +27,24 @@ program
   .option('-c, --context <context>', 'Add context to your commit message')
   .description('Commit your changes')
   .action(commit)
+
+const reset = () => {
+  console.log('\nResetting changes...')
+  try {
+    execSync('git reset')
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+['SIGINT', 'SIGTERM', 'SIGHUP'].forEach((signal) => {
+  process.on(signal, reset)
+})
+
+process.stdin.on('data', (key) => {
+  if (key.toString() === '\u0003') {
+    reset()
+  }
+})
 
 program.parse()

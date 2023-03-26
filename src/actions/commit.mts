@@ -20,15 +20,17 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
       const messages = msg.length ? msg : [
         {
           role: 'system',
-          content: `You are a helpful assistant that create exact one commit message with explanation details. Here is the format of good commit message:
+          content: `Create exact one commit message with explanation details from the diff files. Here is the format of good commit message:
 
+---
 <type>(<scope>): <subject>
 <BLANK LINE>
 <body>
 <BLANK LINE>
 <footer>
+---
 
-With example:
+With allowed <type> values: feat, fix, perf, docs, style, refactor, test, build. And here's the example:
 
 \`\`\`
 fix(middleware): ensure Range headers adhere more closely to RFC 2616
@@ -59,7 +61,7 @@ Fixes #2310
   let messages: any[] = []
   let commitMessage: string
   let isDone: boolean = false
-  const temperature: number = 0.09
+  const temperature: number = 0.01
 
   const spinner = ora()
   while (!isDone) {
@@ -102,6 +104,8 @@ Fixes #2310
           role: 'user',
           content: prompt
         })
+      } else {
+        messages.pop()
       }
       execSync('git reset')
       // temperature += 0.05
