@@ -16,7 +16,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = [
       {
         role: "system",
-        content: "Response with array of folder name that determined the scope of changes from the git status. Please only answer with the parseable json array of string only!"
+        content: "Response with array of folder name that determined the scope of changes from the git status. Please only answer with the parseable json array of folder only!"
       },
       {
         role: "user",
