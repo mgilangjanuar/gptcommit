@@ -13,20 +13,23 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
   }
 
   const chunking = async (files: string[]) => {
+    const messages = [
+      {
+        role: "system",
+        content: "Response with array of folder name that determined the scope of changes from the git status. Please only answer with the parseable json array of string only!"
+      },
+      {
+        role: "user",
+        content: execSync(`git status ${files.join(' ')}`).toString()
+      }
+    ]
+    console.log(messages)
     const { data } = await r.post('/chat/completions', {
       model: 'gpt-3.5-turbo',
       temperature: 0,
-      messages: [
-        {
-          role: "system",
-          content: "Response with array of folder name that determined the scope of changes from the git status. Please only answer with the parseable json array of string only!"
-        },
-        {
-          role: "user",
-          content: execSync(`git status ${files.join(' ')}`).toString()
-        }
-      ]
+      messages
     })
+    console.log(data.choices[0].message)
     return JSON.parse(data.choices[0].message.content) as string[]
   }
 
