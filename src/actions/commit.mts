@@ -39,7 +39,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = msg.length ? msg : [
       {
         role: 'system',
-        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary information in the footer! Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
+        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary information in the footer, footer section is optional! Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
@@ -91,6 +91,9 @@ With follow this instruction "${context}"!` : ''}`
     try {
       messages = await request(temperature, messages)
       commitMessage = messages.at(-1).content.replace(/^"|"$/g, '').trim()
+      if (commitMessage.includes('---')) {
+        commitMessage = commitMessage.split('---')[1].trim()
+      }
     } catch (error) {
       if (isAxiosError(error)) {
         execSync('git reset')
@@ -101,7 +104,7 @@ With follow this instruction "${context}"!` : ''}`
             {
               type: 'confirm',
               name: 'chunk',
-              message: 'Do you want to chunking the files?',
+              message: `Do you want to chunk the files ${JSON.stringify(files)}?`,
               default: true
             }
           ])
