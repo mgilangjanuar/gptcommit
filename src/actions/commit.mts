@@ -111,9 +111,8 @@ With follow this instruction "${context}"!` : ''}`
             spinner.stop()
             for (const [i, chunk] of chunks.entries()) {
               await commit({ files: [chunk], context }, i === chunks.length - 1)
-              if (i === chunk.length - 1) return
             }
-            // return
+            isDone = true
           } else {
             return
           }
