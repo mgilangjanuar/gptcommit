@@ -110,6 +110,7 @@ With follow this instruction "${context}"!` : ''}`
             for (const [i, chunk] of chunks.entries()) {
               await commit({ files: [chunk], context }, i === chunks.length - 1)
             }
+            // return
           } else {
             return
           }
@@ -120,66 +121,67 @@ With follow this instruction "${context}"!` : ''}`
       }
     }
 
-    if (!commitMessage) return
-    spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
+    if (commitMessage) {
+      spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
 
-    const { confirm } = await inquirer.prompt([
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Generate a new commit message?',
+          default: false
+        }
+      ])
+      if (!confirm) {
+        isDone = true
+      } else {
+        const { prompt } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'prompt',
+            message: 'Any context or instruction you want to add?',
+            default: ''
+          }
+        ])
+        if (prompt) {
+          messages.push({
+            role: 'user',
+            content: prompt
+          })
+        } else {
+          messages.pop()
+        }
+        execSync('git reset')
+        // temperature += 0.03
+        console.log()
+      }
+    }
+
+    const { edit } = await inquirer.prompt([
       {
         type: 'confirm',
-        name: 'confirm',
-        message: 'Generate a new commit message?',
+        name: 'edit',
+        message: 'Do you want to edit this commit message?',
         default: false
       }
     ])
-    if (!confirm) {
-      isDone = true
-    } else {
-      const { prompt } = await inquirer.prompt([
+
+    if (edit) {
+      const { message } = await inquirer.prompt([
         {
-          type: 'input',
-          name: 'prompt',
-          message: 'Any context or instruction you want to add?',
-          default: ''
+          type: 'editor',
+          name: 'message',
+          message: 'Edit your commit message',
+          default: commitMessage
         }
       ])
-      if (prompt) {
-        messages.push({
-          role: 'user',
-          content: prompt
-        })
-      } else {
-        messages.pop()
-      }
-      execSync('git reset')
-      // temperature += 0.03
-      console.log()
+      commitMessage = message
     }
+    execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
   }
 
-  const { edit } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'edit',
-      message: 'Do you want to edit this commit message?',
-      default: false
-    }
-  ])
-
-  if (edit) {
-    const { message } = await inquirer.prompt([
-      {
-        type: 'editor',
-        name: 'message',
-        message: 'Edit your commit message',
-        default: commitMessage
-      }
-    ])
-    commitMessage = message
-  }
-
-  execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
-
-  if (done) {
+  const checkIsBranchClean = execSync('git status --porcelain').toString().trim()
+  if (!checkIsBranchClean && done) {
     const { push } = await inquirer.prompt([
       {
         type: 'confirm',
