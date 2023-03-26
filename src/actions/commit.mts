@@ -108,7 +108,7 @@ With follow this instruction "${context}"!` : ''}`
           if (chunk) {
             const chunks = await chunking(files)
             for (const [i, chunk] of chunks.entries()) {
-              await commit({ files: [chunk], context }, i === chunks.length - 1)
+              return await commit({ files: [chunk], context }, i === chunks.length - 1)
             }
             // return
           } else {
