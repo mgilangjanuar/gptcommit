@@ -24,5 +24,5 @@ $ gptcommit set-token <your OpenAI API token>
 ```
 
 ```bash
-$ gptcommit [--files /path/to/file1 /path/to/file2]
+$ gptcommit [--files /path/to/file1 /path/to/file2 ...] [--context 'it closes #123 #122']
 ```

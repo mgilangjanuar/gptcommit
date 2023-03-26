@@ -59,14 +59,15 @@ With follow this instruction "${context}"!` : ''}`
   let messages: any[] = []
   let commitMessage: string
   let isDone: boolean = false
-  let temperature: number = 0.01
+  const temperature: number = 0.01
 
   const spinner = ora()
   while (!isDone) {
     console.clear()
     console.log(
-      `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Thin' })}\n`
+      `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Contessa' })}\n`
     )
+    console.log()
     spinner.start('Generating a commit message...')
     try {
       messages = await request(temperature, messages)
@@ -114,7 +115,7 @@ With follow this instruction "${context}"!` : ''}`
         messages.pop()
       }
       execSync('git reset')
-      temperature += 0.03
+      // temperature += 0.03
       console.log()
     }
   }
