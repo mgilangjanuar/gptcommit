@@ -49,7 +49,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
 <footer>
 ---
 
-With allowed <type> values are feat, fix, perf, docs, style, refactor, test, build. And here's the example of good commit message:
+With allowed <type> values are feat, fix, perf, docs, style, refactor, test, and build. You can leave the <footer> section blank. And here's an example of a good commit message:
 
 ---
 fix(middleware): ensure Range headers adhere more closely to RFC 2616
