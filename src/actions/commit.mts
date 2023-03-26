@@ -189,13 +189,13 @@ With follow this instruction "${context}"!` : ''}`
   }
 
   if (done && !depth) {
-    const checkIsBranchClean = execSync('git status').toString().trim()
-    if (checkIsBranchClean.includes('branch is ahead')) {
+    const branchStatus = execSync('git status').toString().trim()
+    if (branchStatus.includes('branch is ahead')) {
       const { push } = await inquirer.prompt([
         {
           type: 'confirm',
           name: 'push',
-          message: `${checkIsBranchClean.split('\n')[1]} Do you want to push the commit(s)?`,
+          message: `${branchStatus.split('\n')[1]} Do you want to push the commit(s)?`,
         }
       ])
       if (push) {
