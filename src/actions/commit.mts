@@ -106,7 +106,9 @@ With follow this instruction "${context}"!` : ''}`
             }
           ])
           if (chunk) {
+            const spinner = ora(`Chunking the files ${JSON.stringify(files)}...`).start()
             const chunks = await chunking(files)
+            spinner.stop()
             for (const [i, chunk] of chunks.entries()) {
               return await commit({ files: [chunk], context }, i === chunks.length - 1)
             }
