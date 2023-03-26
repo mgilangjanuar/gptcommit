@@ -6,7 +6,7 @@ import ora from 'ora'
 import { r } from '../utils/OpenAI.mjs'
 import { config } from '../utils/Storage.mjs'
 
-export async function commit({ files = ['.'], context }: { files: string[], context?: string }, done: boolean = true) {
+export async function commit({ files = ['.'], context }: { files: string[], context?: string }, done: boolean = true): Promise<void> {
   if (!config.get('token')) {
     ora('You need to set your OpenAI token first. Run `gptcommit set-token <your token>`.').fail()
     return
@@ -82,7 +82,7 @@ With follow this instruction "${context}"!` : ''}`
 
   const spinner = ora()
   while (!isDone) {
-    // console.clear()
+    console.clear()
     console.log(
       `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Contessa' })}\n`
     )
@@ -119,6 +119,8 @@ With follow this instruction "${context}"!` : ''}`
         return
       }
     }
+
+    if (!commitMessage) return
     spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
 
     const { confirm } = await inquirer.prompt([
