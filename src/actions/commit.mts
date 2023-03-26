@@ -12,6 +12,24 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     return
   }
 
+  const chunking = async () => {
+    const { data } = await r.post('/chat/completions', {
+      model: 'gpt-3.5-turbo',
+      temperature: 0,
+      messages: [
+        {
+          role: "system",
+          content: "Response with array of folder name that determined the scope of changes from the git status. Please only answer with the parseable json array of string only!"
+        },
+        {
+          role: "user",
+          content: execSync(`git status ${files.join(' ')}`).toString()
+        }
+      ]
+    })
+    return JSON.parse(data.choices[0].message.content) as string[]
+  }
+
   const request = async (temperature: number = 0.01, msg: any[] = []) => {
     const diffString = execSync(`git add ${files.join(' ')} && git diff --staged`).toString()
     if (!diffString.trim()) {
@@ -20,7 +38,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = msg.length ? msg : [
       {
         role: 'system',
-        content: `You are a commit message generator by creating exact one commit message by the diff files. Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
+        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary info in footer. Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
@@ -68,7 +86,7 @@ With follow this instruction "${context}"!` : ''}`
       `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Contessa' })}\n`
     )
     console.log()
-    spinner.start('Generating a commit message...')
+    spinner.start(`Generating a commit message for files: ${JSON.stringify(files)}...`)
     try {
       messages = await request(temperature, messages)
       commitMessage = messages.at(-1).content.replace(/^"|"$/g, '').trim()
@@ -78,14 +96,25 @@ With follow this instruction "${context}"!` : ''}`
         if (err.response.status === 400 && err.response.data.error.code === 'context_length_exceeded')  {
           execSync('git reset')
           spinner.fail('Changes too big. Please select a smaller set of files with `gptcommit --files <files...>`.')
-          return
+          const { chunk } = await inquirer.prompt([
+            {
+              type: 'confirm',
+              name: 'chunk',
+              message: 'Do you want to chunking the files?',
+              default: true
+            }
+          ])
+          if (!chunk) return
+          for (const chunk of await chunking()) {
+            await commit({ files: [chunk], context })
+          }
         }
       }
       execSync('git reset')
       spinner.fail(error.message)
       return
     }
-    spinner.succeed(`Successfully generated a commit message.\n---\n${commitMessage}\n---`)
+    spinner.succeed(`Successfully generated a commit message (files: ${files.join(', ')})\n---\n${commitMessage}\n---`)
 
     const { confirm } = await inquirer.prompt([
       {
