@@ -114,7 +114,7 @@ With follow this instruction "${context}"!` : ''}`
             }
             isDone = true
           } else {
-            return
+            isDone = true
           }
         }
       } else {
@@ -160,28 +160,29 @@ With follow this instruction "${context}"!` : ''}`
     }
   }
 
-  if (!commitMessage) return
-  const { edit } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'edit',
-      message: 'Do you want to edit this commit message?',
-      default: false
-    }
-  ])
-
-  if (edit) {
-    const { message } = await inquirer.prompt([
+  if (commitMessage) {
+    const { edit } = await inquirer.prompt([
       {
-        type: 'editor',
-        name: 'message',
-        message: 'Edit your commit message',
-        default: commitMessage
+        type: 'confirm',
+        name: 'edit',
+        message: 'Do you want to edit this commit message?',
+        default: false
       }
     ])
-    commitMessage = message
+
+    if (edit) {
+      const { message } = await inquirer.prompt([
+        {
+          type: 'editor',
+          name: 'message',
+          message: 'Edit your commit message',
+          default: commitMessage
+        }
+      ])
+      commitMessage = message
+    }
+    execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
   }
-  execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
 
   const checkIsBranchClean = execSync('git status').toString().trim()
   if (checkIsBranchClean.includes('branch is ahead') && done) {
@@ -189,7 +190,7 @@ With follow this instruction "${context}"!` : ''}`
       {
         type: 'confirm',
         name: 'push',
-        message: 'Do you want to push this?'
+        message: `${checkIsBranchClean.split('\n')[1]} Do you want to push the commit(s)?`,
       }
     ])
     if (push) {
