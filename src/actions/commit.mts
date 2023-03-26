@@ -38,7 +38,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = msg.length ? msg : [
       {
         role: 'system',
-        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary info in footer. Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
+        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unprovided information. Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
