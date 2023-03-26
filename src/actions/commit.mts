@@ -183,8 +183,8 @@ With follow this instruction "${context}"!` : ''}`
   }
   execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
 
-  const checkIsBranchClean = execSync('git status --porcelain').toString().trim()
-  if (!checkIsBranchClean && done) {
+  const checkIsBranchClean = execSync('git status').toString().trim()
+  if (checkIsBranchClean.includes('branch is ahead') && done) {
     const { push } = await inquirer.prompt([
       {
         type: 'confirm',
