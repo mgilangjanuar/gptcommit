@@ -29,7 +29,7 @@ program
   .action(commit)
 
 const reset = () => {
-  console.log('\nResetting changes...')
+  console.log('\n\nResetting changes...')
   try {
     execSync('git reset')
   } catch (error) {

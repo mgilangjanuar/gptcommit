@@ -87,7 +87,8 @@ With follow this instruction "${context}"!` : ''}`
     console.log(
       `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Contessa' })}\n`
     )
-    console.log()
+    console.log('✨ Support us: https://github.com/sponsors/mgilangjanuar 💚\n')
+    console.log('\u001b[2mPress Ctrl+C to exit\u001b[22m\n')
     spinner.start(`Generating a commit message for files: ${JSON.stringify(files)}...`)
     try {
       messages = await request(temperature, messages)
