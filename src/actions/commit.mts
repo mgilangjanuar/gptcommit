@@ -81,7 +81,7 @@ With follow this instruction "${context}"!` : ''}`
 
   const spinner = ora()
   while (!isDone) {
-    console.clear()
+    // console.clear()
     console.log(
       `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Contessa' })}\n`
     )
