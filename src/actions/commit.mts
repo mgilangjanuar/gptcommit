@@ -1,3 +1,4 @@
+import { AxiosError, isAxiosError } from 'axios'
 import { execSync } from 'child_process'
 import figlet from 'figlet'
 import inquirer from 'inquirer'
@@ -11,16 +12,15 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     return
   }
 
-  const request = async (temperature: number = 0.09, msg: any[] = []) => {
+  const request = async (temperature: number = 0.01, msg: any[] = []) => {
     const diffString = execSync(`git add ${files.join(' ')} && git diff --staged`).toString()
     if (!diffString.trim()) {
       throw { status: 5001, message: 'No changes to commit' }
     }
-    try {
-      const messages = msg.length ? msg : [
-        {
-          role: 'system',
-          content: `Create exact one commit message with explanation details from the diff files. Here is the format of good commit message:
+    const messages = msg.length ? msg : [
+      {
+        role: 'system',
+        content: `You are a commit message generator by creating exact one commit message by the diff files. Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
@@ -30,50 +30,56 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
 <footer>
 ---
 
-With allowed <type> values: feat, fix, perf, docs, style, refactor, test, build. And here's the example:
+With allowed <type> values are feat, fix, perf, docs, style, refactor, test, build. And here's the example of good commit message:
 
-\`\`\`
+---
 fix(middleware): ensure Range headers adhere more closely to RFC 2616
 
 Add one new dependency, use \`range-parser\` (Express dependency) to compute range. It is more well-tested in the wild.
 
 Fixes #2310
-\`\`\`${context ? `\n\nWith follow this instruction "${context}".` : ''}`
-        },
-        {
-          role: 'user',
-          content: diffString
-        }
-      ]
-      const { data } = await r.post('/chat/completions', {
-        model: 'gpt-3.5-turbo',
-        temperature,
-        messages
-      })
-      messages.push(data.choices[0].message)
-      return messages
-      // return data.choices[0].message.content.replace(/^"|"$/g, '').trim()
-    } catch (error) {
-      throw error.response.data.error || error.response.data || error
-    }
+---${context ? `
+
+With follow this instruction "${context}"!` : ''}`
+      },
+      {
+        role: 'user',
+        content: diffString
+      }
+    ]
+    const { data } = await r.post('/chat/completions', {
+      model: 'gpt-3.5-turbo',
+      temperature,
+      messages
+    })
+    messages.push(data.choices[0].message)
+    return messages
   }
 
   let messages: any[] = []
   let commitMessage: string
   let isDone: boolean = false
-  const temperature: number = 0.01
+  let temperature: number = 0.01
 
   const spinner = ora()
   while (!isDone) {
     console.clear()
     console.log(
-      `${figlet.textSync('gptcommit by\n@mgilangjanuar')}\n`
+      `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Thin' })}\n`
     )
     spinner.start('Generating a commit message...')
     try {
       messages = await request(temperature, messages)
       commitMessage = messages.at(-1).content.replace(/^"|"$/g, '').trim()
     } catch (error) {
+      if (isAxiosError(error)) {
+        const err = error as AxiosError<{ error: { code: string } }>
+        if (err.response.status === 400 && err.response.data.error.code === 'context_length_exceeded')  {
+          execSync('git reset')
+          spinner.fail('Changes too big. Please select a smaller set of files with `gptcommit --files <files...>`.')
+          return
+        }
+      }
       execSync('git reset')
       spinner.fail(error.message)
       return
@@ -108,7 +114,7 @@ Fixes #2310
         messages.pop()
       }
       execSync('git reset')
-      // temperature += 0.05
+      temperature += 0.03
       console.log()
     }
   }
