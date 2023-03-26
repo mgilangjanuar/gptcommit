@@ -12,7 +12,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     return
   }
 
-  const chunking = async () => {
+  const chunking = async (files: string[]) => {
     const { data } = await r.post('/chat/completions', {
       model: 'gpt-3.5-turbo',
       temperature: 0,
@@ -105,8 +105,9 @@ With follow this instruction "${context}"!` : ''}`
             }
           ])
           if (!chunk) return
-          const chunks = await chunking()
+          const chunks = await chunking(files)
           for (const [i, chunk] of chunks.entries()) {
+            console.log(chunk, chunks)
             await commit({ files: [chunk], context }, i === chunks.length - 1)
           }
         }
