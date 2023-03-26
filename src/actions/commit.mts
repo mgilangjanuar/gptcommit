@@ -6,7 +6,7 @@ import ora from 'ora'
 import { r } from '../utils/OpenAI.mjs'
 import { config } from '../utils/Storage.mjs'
 
-export async function commit({ files = ['.'], context }: { files: string[], context?: string }, done: boolean = true): Promise<void> {
+export async function commit({ files = ['.'], context }: { files: string[], context?: string }, done: boolean = true, depth: number = 0): Promise<void> {
   if (!config.get('token')) {
     ora('You need to set your OpenAI token first. Run `gptcommit set-token <your token>`.').fail()
     return
@@ -114,7 +114,7 @@ With follow this instruction "${context}"!` : ''}`
             const chunks = await chunking(files)
             spinner.stop()
             for (const [i, chunk] of chunks.entries()) {
-              await commit({ files: [chunk], context }, i === chunks.length - 1)
+              await commit({ files: [chunk], context }, i === chunks.length - 1, depth + 1)
             }
             isDone = true
           } else {
@@ -188,24 +188,26 @@ With follow this instruction "${context}"!` : ''}`
     execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
   }
 
-  const checkIsBranchClean = execSync('git status').toString().trim()
-  if (checkIsBranchClean.includes('branch is ahead') && done) {
-    const { push } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'push',
-        message: `${checkIsBranchClean.split('\n')[1]} Do you want to push the commit(s)?`,
-      }
-    ])
-    if (push) {
-      const spinner = ora('Pushing...').start()
-      try {
-        execSync('git push -u origin HEAD')
-        spinner.succeed('Pushed.')
-      } catch (error) {
-        execSync('git reset')
-        spinner.fail(error.message)
-        return
+  if (done && !depth) {
+    const checkIsBranchClean = execSync('git status').toString().trim()
+    if (checkIsBranchClean.includes('branch is ahead')) {
+      const { push } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'push',
+          message: `${checkIsBranchClean.split('\n')[1]} Do you want to push the commit(s)?`,
+        }
+      ])
+      if (push) {
+        const spinner = ora('Pushing...').start()
+        try {
+          execSync('git push -u origin HEAD')
+          spinner.succeed('Pushed.')
+        } catch (error) {
+          execSync('git reset')
+          spinner.fail(error.message)
+          return
+        }
       }
     }
   }
