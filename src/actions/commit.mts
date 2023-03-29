@@ -45,8 +45,6 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
 <type>(<scope>): <subject>
 <BLANK LINE>
 <body>
-<BLANK LINE>
-<footer>
 ---
 
 With allowed <type> values are feat, fix, perf, docs, style, refactor, test, and build. You can leave the <footer> section blank. And here's an example of a good commit message:
@@ -55,8 +53,6 @@ With allowed <type> values are feat, fix, perf, docs, style, refactor, test, and
 fix(middleware): ensure Range headers adhere more closely to RFC 2616
 
 Add one new dependency, use \`range-parser\` (Express dependency) to compute range. It is more well-tested in the wild.
-
-Fixes #2310
 ---${context ? `
 
 With follow this instruction "${context}"!` : ''}`
@@ -67,7 +63,7 @@ With follow this instruction "${context}"!` : ''}`
       }
     ]
     const { data } = await r.post('/chat/completions', {
-      model: 'gpt-3.5-turbo',
+      model: config.get('model') || 'gpt-3.5-turbo',
       temperature,
       max_tokens: 100,
       messages

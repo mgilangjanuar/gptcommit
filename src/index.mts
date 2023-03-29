@@ -3,6 +3,7 @@
 import { execSync } from 'child_process'
 import { Command } from 'commander'
 import { commit } from './actions/commit.mjs'
+import { setModel } from './actions/setModel.mjs'
 import { setToken } from './actions/setToken.mjs'
 
 const program = new Command()
@@ -21,6 +22,11 @@ program
 //   .command('set-mode')
 //   .description('Select your commit style')
 //   .action(setMode)
+
+program
+  .command('set-model <model>')
+  .description('Set your model, default: gpt-3.5-turbo (https://platform.openai.com/docs/models)')
+  .action(setModel)
 
 program
   .option('-f, --files <files...>', 'Select a file or directory to commit', ['.'])
