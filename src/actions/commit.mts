@@ -39,7 +39,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
     const messages = msg.length ? msg : [
       {
         role: 'system',
-        content: `You are a commit message generator by creating exactly one commit message by the diff files without adding unnecessary information! Here is the format of good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
+        content: `You are a commit message generator by creating exactly one commit message by the diff strings without adding unnecessary information! Here is the format of a good commit message from https://karma-runner.github.io/6.4/dev/git-commit-msg.html guides:
 
 ---
 <type>(<scope>): <subject>
@@ -47,7 +47,7 @@ export async function commit({ files = ['.'], context }: { files: string[], cont
 <body>
 ---
 
-With allowed <type> values are feat, fix, perf, docs, style, refactor, test, and build. You can leave the <footer> section blank. And here's an example of a good commit message:
+With allowed <type> values are feat, fix, perf, docs, style, refactor, test, and build. And here's an example of a good commit message:
 
 ---
 fix(middleware): ensure Range headers adhere more closely to RFC 2616
