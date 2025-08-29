@@ -84,7 +84,7 @@ ${diffString}`
   }
 
   console.log(commitMessage)
-  execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
+  execSync(`printf "${commitMessage}" | git commit -F-`)
   const branchStatus = execSync('git status').toString().trim()
   if (branchStatus.includes('branch is ahead')) {
     const { push } = await inquirer.prompt([
