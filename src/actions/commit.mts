@@ -81,7 +81,7 @@ With follow this instruction "${context}"!` : ''}`
   while (!isDone) {
     console.clear()
     console.log(
-      `${figlet.textSync('gptcommit by\n@mgilangjanuar', { font: 'Contessa' })}\n`
+      `${figlet.textSync('gptcommit', { font: 'computer' })}\n`
     )
     console.log('✨ Support us: https://github.com/sponsors/mgilangjanuar 💚\n')
     console.log('\u001b[2mPress Ctrl+C to exit\u001b[22m\n')
@@ -123,66 +123,6 @@ With follow this instruction "${context}"!` : ''}`
         return
       }
     }
-
-    if (commitMessage) {
-      spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
-
-      const { confirm } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'confirm',
-          message: 'Generate a new commit message?',
-          default: false
-        }
-      ])
-      if (!confirm) {
-        isDone = true
-      } else {
-        const { prompt } = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'prompt',
-            message: 'Any context or instruction you want to add?',
-            default: ''
-          }
-        ])
-        if (prompt) {
-          messages.push({
-            role: 'user',
-            content: prompt
-          })
-        } else {
-          messages.pop()
-        }
-        execSync('git reset')
-        // temperature += 0.03
-        console.log()
-      }
-    }
-  }
-
-  if (commitMessage) {
-    const { edit } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'edit',
-        message: 'Do you want to edit this commit message?',
-        default: false
-      }
-    ])
-
-    if (edit) {
-      const { message } = await inquirer.prompt([
-        {
-          type: 'editor',
-          name: 'message',
-          message: 'Edit your commit message',
-          default: commitMessage
-        }
-      ])
-      commitMessage = message
-    }
-    execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
   }
 
   if (done && !depth) {
@@ -198,6 +138,7 @@ With follow this instruction "${context}"!` : ''}`
       if (push) {
         const spinner = ora('Pushing...').start()
         try {
+          execSync('git pull origin $(git rev-parse --abbrev-ref HEAD)')
           execSync('git push -u origin HEAD')
           spinner.succeed('Pushed.')
         } catch (error) {
