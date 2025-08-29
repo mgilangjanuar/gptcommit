@@ -83,7 +83,8 @@ ${diffString}`
     }
   }
 
-  console.log(commitMessage)
+  spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
+
   execSync(`printf "${commitMessage}" | git commit -F-`)
   const branchStatus = execSync('git status').toString().trim()
   if (branchStatus.includes('branch is ahead')) {
