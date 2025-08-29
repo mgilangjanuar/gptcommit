@@ -41,7 +41,6 @@ With follow this instruction "${context}"!` : ''}
 
 ${diffString}`
     })
-    console.log(data.output[0].content[0])
     return data.output[0].content[0].text
   }
 
@@ -84,6 +83,7 @@ ${diffString}`
     }
   }
 
+  console.log(commitMessage)
   execSync(`printf "${commitMessage.replace(/\`/gi, '\\\`')}" | git commit -F-`)
   const branchStatus = execSync('git status').toString().trim()
   if (branchStatus.includes('branch is ahead')) {
