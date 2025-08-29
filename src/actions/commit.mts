@@ -83,7 +83,7 @@ ${diffString}`
     }
   }
 
-  spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n---\n${commitMessage}\n---`)
+  spinner.succeed(`Successfully generated a commit message for files: ${JSON.stringify(files)}\n\n---\n${commitMessage}\n---\n`)
 
   execSync(`printf "${commitMessage}" | git commit -F-`)
   const branchStatus = execSync('git status').toString().trim()
